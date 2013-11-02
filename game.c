@@ -1,6 +1,6 @@
 #include <msp430g2553.h>
 #include "game.h"
-#include "LCD/LCD.h"
+#include "LCD.h"
 
 unsigned char initPlayer()
 {
