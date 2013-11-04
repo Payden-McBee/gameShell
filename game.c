@@ -4,10 +4,7 @@
 
 unsigned char initPlayer()
 {
-	topRow=TRUE;
-	bottomRow=FALSE;
-	farRight=FALSE;
-	farLeftTRUE;
+
 	return 0x80;
 }
 
