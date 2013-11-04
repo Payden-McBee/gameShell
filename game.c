@@ -36,9 +36,21 @@ unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned
 		}
 		break;
 	case GO_LEFT:
-		if(notOnFarLeft)
+		switch (player)
+		{
+			case 0x80:
+				//do nothing
+				break;
+			case 0xC0:
+				player = 0x87;
+				break;
+			default:
+				player--;
+				break;
+		}
+		if(player==0x80)
 			{
-			player--;
+			//do nothing
 			}
 		else{
 			if(player==0xC0)
