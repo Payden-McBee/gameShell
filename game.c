@@ -20,9 +20,35 @@ void clearPlayer(unsigned char player)
 	writeDataByte(' ');
 }
 
-unsigned char movePlayer(unsigned char player, unsigned char direction)
+unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow)
 {
-	switch (direction) {
+
+	switch (direction)
+	{
+	case GO_RIGHT:
+		//if(notOnFarRight)
+		{
+			player++;
+		}
+		break;
+	case GO_LEFT:
+	//	if(notOnFarLeft)
+			{
+			player--;
+			}
+		break;
+	case GO_UP:
+		if(notOnTopRow)
+			{
+			player=player-TOP_BOTTOM_DIFFERENCE;
+			}
+		break;
+	case GO_DOWN:
+		if(notOnBottomRow)
+			{
+			player=player+TOP_BOTTOM_DIFFERENCE;
+			}
+		break;
 		//
 		// update player position based on direction of movement
 		//

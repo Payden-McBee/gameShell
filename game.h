@@ -18,6 +18,13 @@
 
 #define NUM_MINES 2
 
+#define GO_RIGHT 1
+#define GO_LEFT 2
+#define GO_UP 3
+#define GO_DOWN 4
+#define NO_DIRECTION 0
+#define TOP_BOTTOM_DIFFERENCE 0x40
+
 //
 // Initializes player to starting position on board.
 //
@@ -36,7 +43,7 @@ void clearPlayer(unsigned char player);
 //
 // Given a player's current position and a direction, returns an updated player position.
 //
-unsigned char movePlayer(unsigned char player, unsigned char direction);
+unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow);
 
 //
 // Returns true if the position passed in is the winning game position.
