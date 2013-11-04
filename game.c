@@ -83,3 +83,22 @@ char didPlayerWin(unsigned char player)
 {
 	return player == 0xC7;
 }
+
+unsigned char gameOver()
+{
+	unsigned char player=0x80;
+	LCDCLR();
+	char string1[]="Game      ";
+	char string2[]="Over!      ";
+	cursorToLineOne();
+	writeString(string1);
+	cursorToLineTwo();
+	writeString(string2);
+	longdelay();
+	return player;
+
+}
+int clearTimer()
+{
+	return 0;
+}

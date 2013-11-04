@@ -50,6 +50,8 @@ unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned
 //
 char didPlayerWin(unsigned char player);
 
+unsigned char gameOver();
+
 /*
  * Functions which may prove useful in achieving A-Functionality.
  * 
