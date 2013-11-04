@@ -11,6 +11,9 @@
 #define LEFT 3
 #define RIGHT 4
 
+#define TRUE 1
+#define FALSE 0
+
 #define ROW_MASK 0x40
 
 #define NUM_MINES 2
