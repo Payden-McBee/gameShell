@@ -30,12 +30,22 @@ unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned
 		{
 			player++;
 		}
+		else
+		{
+			player=0xC0;
+		}
 		break;
 	case GO_LEFT:
 		if(notOnFarLeft)
 			{
 			player--;
 			}
+		else{
+			if(player==0xC0)
+			{
+				player=0x87;
+			}
+		}
 		break;
 	case GO_UP:
 		if(notOnTopRow)
