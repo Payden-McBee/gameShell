@@ -20,19 +20,19 @@ void clearPlayer(unsigned char player)
 	writeDataByte(' ');
 }
 
-unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow)
+unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow, unsigned char notOnFarLeft,  unsigned char notOnFarRight)
 {
 
 	switch (direction)
 	{
 	case GO_RIGHT:
-		//if(notOnFarRight)
+		if(notOnFarRight)
 		{
 			player++;
 		}
 		break;
 	case GO_LEFT:
-	//	if(notOnFarLeft)
+		if(notOnFarLeft)
 			{
 			player--;
 			}

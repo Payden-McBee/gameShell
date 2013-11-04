@@ -6,23 +6,23 @@
  */
 
 
-#define UP 1
-#define DOWN 2
-#define LEFT 3
-#define RIGHT 4
+#define UP 0x1
+#define DOWN 0x2
+#define LEFT 0x3
+#define RIGHT 0x4
 
-#define TRUE 1
-#define FALSE 0
+#define TRUE 0x1
+#define FALSE 0x0
 
 #define ROW_MASK 0x40
 
-#define NUM_MINES 2
+#define NUM_MINES 0x2
 
-#define GO_RIGHT 1
-#define GO_LEFT 2
-#define GO_UP 3
-#define GO_DOWN 4
-#define NO_DIRECTION 0
+#define GO_RIGHT 0x1
+#define GO_LEFT 0x2
+#define GO_UP 0x3
+#define GO_DOWN 0x4
+#define NO_DIRECTION 0x0
 #define TOP_BOTTOM_DIFFERENCE 0x40
 
 //
@@ -43,7 +43,7 @@ void clearPlayer(unsigned char player);
 //
 // Given a player's current position and a direction, returns an updated player position.
 //
-unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow);
+unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow, unsigned char notOnFarLeft,  unsigned char notOnFarRight);
 
 //
 // Returns true if the position passed in is the winning game position.
