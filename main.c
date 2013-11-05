@@ -216,7 +216,7 @@ __interrupt void TIMER0_A1_ISR()
     flag = 1;
 }
 
-
+//interrrupts for buttons
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1_ISR(void)
 {
