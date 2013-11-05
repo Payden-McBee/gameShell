@@ -102,3 +102,10 @@ int clearTimer()
 {
 	return 0;
 }
+
+void setMines(){
+	writeCommandByte(0x83);
+		writeDataByte('X');
+	writeCommandByte(0xC0);
+	    writeDataByte('X');
+}

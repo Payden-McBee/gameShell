@@ -52,6 +52,7 @@ char didPlayerWin(unsigned char player);
 
 unsigned char gameOver();
 
+void setMines();
 /*
  * Functions which may prove useful in achieving A-Functionality.
  * 
