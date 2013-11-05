@@ -215,6 +215,8 @@ __interrupt void TIMER0_A1_ISR()
     TACTL &= ~TAIFG;            // clear interrupt flag
     flag = 1;
 }
+
+
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1_ISR(void)
 {
