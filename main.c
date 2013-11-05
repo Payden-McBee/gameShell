@@ -2,6 +2,7 @@
 #include "game_shell/game.h"
 #include "buttons/button.h"
 #include "game_shell/LCD.h"
+//#include "msp430-rng/rand.h"
 
 #define TRUE 0x1
 #define FALSE 0x0
@@ -36,12 +37,22 @@ unsigned char currentPos;
 
 unsigned char didIwin;
 
+unsigned int seed;
+unsigned int randomNum;
+unsigned int firstMine;
+unsigned int secondMine;
+ unsigned int upper;
+ unsigned int lower;
+
 void init_timer();
 void init_buttons();
 
 void main(void)
 {
 	WDTCTL = (WDTPW|WDTHOLD);
+
+	seed=rand();
+
 	INITSPI();
 	LCDINIT();
 	LCDCLR();
@@ -67,25 +78,28 @@ void main(void)
 	/////////////every time you detect a release (rising edge) delay for a short period of time, this should debounce it
 	currentPos=startingPoint;
 	printPlayer(startingPoint);
+
+
+	randomNum=prand(seed);
+	upper=0;
+	lower=0;
+
+	while(upper==lower || upper == lower+1 || upper == lower-1)
+	{
+		randomNum=prand(randomNum);
+		firstMine= 0x81+randomNum%7;
+		randomNum=prand(randomNum);
+		secondMine=0xC0+randomNum%7;
+
+		upper=(firstMine & 0x0f);
+		lower=(secondMine & 0x0f);
+	}
+
+	setMines(firstMine,secondMine);
+	//randomNum=prand(randomNum); //use in main program loop
 	while(1)
 	{
-		/*
-		 * while (game is on)
-		 * {
-		 * 		check if button is pushed (you don't want to block here, so don't poll!)
-		 * 		if button is pushed:
-		 * 			clear current player marker
-		 * 			update player position based on direction
-		 * 			print new player
-		 * 			clear two second timer
-		 * 			wait for button release (you can poll here)
-		 * }
-		 *
-		 * print game over or you won, depending on game result
-		 *
-		 * wait for button press to begin new game (you can poll here)
-		 * wait for release before starting again
-		 */
+
 			if(buttonPushed)
 			{
 				count=0; //reset timer
@@ -95,9 +109,8 @@ void main(void)
 				}
 				else
 				{
-
-				//do something
 				LCDCLR();
+				//setMines();
 				currentPos=movePlayer(currentPos, direction, onBottomRow,onTopRow, NotOnFarLeft, NotOnFarRight);
 				printPlayer(currentPos);
 				//set conditions to change boundary checks
@@ -171,6 +184,7 @@ void main(void)
 								writeString(string2);
 								count=0;
 							}
+
 	}
 
 
@@ -210,11 +224,12 @@ void init_buttons()
 }
 // Flag for continuous counting is TAIFG
 #pragma vector=TIMER0_A1_VECTOR
-__interrupt void TIMER0_A1_ISR()
+__interrupt void TIMER0_A1_ISR(void)
 {
     TACTL &= ~TAIFG;            // clear interrupt flag
     flag = 1;
 }
+
 
 //interrrupts for buttons
 #pragma vector=PORT1_VECTOR
