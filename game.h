@@ -43,6 +43,8 @@ void clearPlayer(unsigned char player);
 //
 // Given a player's current position and a direction, returns an updated player position.
 //
+
+void BOOM();
 unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow, unsigned char notOnFarLeft,  unsigned char notOnFarRight);
 
 //

@@ -98,6 +98,17 @@ unsigned char gameOver()
 	return player;
 
 }
+void BOOM()
+{
+		LCDCLR();
+		char string1[]="BOOM!      ";
+		char string2[]="BOOM!      ";
+		cursorToLineOne();
+		writeString(string1);
+		cursorToLineTwo();
+		writeString(string2);
+		longdelay();
+}
 int clearTimer()
 {
 	return 0;
