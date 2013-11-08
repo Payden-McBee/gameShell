@@ -1,4 +1,4 @@
-Lab4
+Lab5 Interrupts
 ====
 
 Device driver for LCD in geek box.
