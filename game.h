@@ -45,6 +45,7 @@ void clearPlayer(unsigned char player);
 //
 
 void BOOM();
+void displayYouWon();
 unsigned char movePlayer(unsigned char player, unsigned char direction, unsigned char notOnTopRow, unsigned char notOnBottomRow, unsigned char notOnFarLeft,  unsigned char notOnFarRight);
 
 //

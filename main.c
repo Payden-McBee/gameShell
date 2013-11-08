@@ -11,6 +11,10 @@
 #define ON_FAR_RIGHT 0x87
 #define ON_FAR_LEFT 0x80
 #define LAST_SPOT_TOP_ROW 0X88
+#define FIRST_ROW_SECOND_SPACE 0x81
+#define SECOND_ROW_FIRST_SPACE 0xC0
+
+#define CLEAR_LOWER_BIT 0x0f
 
 unsigned char startingPoint;
 unsigned char buttonPushed;
@@ -95,21 +99,18 @@ void main(void)
 			{
 				LCDCLR();
 				BOOM();
-				player=0x80;
-				currentPos=0x80;
-				hitMine=1;
-				//generateAndSetMines();
-				//player=gameOver(player);
-				//generateAndSetMines();
+				player=ON_FAR_LEFT;
+				currentPos=ON_FAR_LEFT;
+				hitMine=TRUE;
 			}
 			if(buttonPushed)
 			{
 				if(hitMine)
 				{
 					generateAndSetMines();
-					hitMine=0;
+					hitMine=FALSE;
 				}
-				count=0; //reset timer
+				count=0; //reset counter
 				if(didIwin)
 				{
 					didIwin=FALSE;
@@ -117,50 +118,56 @@ void main(void)
 				}
 				else
 				{
-				LCDCLR();
-				//setMines();
-				currentPos=movePlayer(currentPos, direction, onBottomRow,onTopRow, NotOnFarLeft, NotOnFarRight);
-				printPlayer(currentPos);
-				setMines(firstMine,secondMine);
-				//set conditions to change boundary checks
-				if(currentPos==80)
-					{
-					NotOnFarLeft=FALSE; NotOnFarRight= TRUE;
+						LCDCLR();
 
-					}
-				else{
-					NotOnFarLeft=TRUE;
-				}
-				if(currentPos==0x87)
-				{
-					NotOnFarRight=FALSE;
-				}
-				else{
-					NotOnFarRight=TRUE;
-				}
-				if(currentPos>LAST_SPOT_TOP_ROW)
-				{
-					onTopRow=FALSE;
-					onBottomRow=TRUE;
-				}
-				else
-				{
-					onTopRow=TRUE;
-					onBottomRow=FALSE;
-				}
+						currentPos=movePlayer(currentPos, direction, onBottomRow,onTopRow, NotOnFarLeft, NotOnFarRight);
+						printPlayer(currentPos);
+						setMines(firstMine,secondMine);
 
-				//then change boundary if on far right or left then both ok
-				//then win the game if on far bottom right, if statement with capn B's function didWin
-				buttonPushed=FALSE; //reset button pushed
-				 //reset directions
-				direction=noDirectionYet;
-				didIwin=didPlayerWin(currentPos);
+						//set conditions to change boundary checks
+						if(currentPos==ON_FAR_LEFT)
+						{
+							NotOnFarLeft=FALSE; NotOnFarRight= TRUE;
+						}
+						else
+						{
+							NotOnFarLeft=TRUE;
+						}
+
+						if(currentPos==ON_FAR_RIGHT)
+						{
+							NotOnFarRight=FALSE;
+						}
+						else
+						{
+							NotOnFarRight=TRUE;
+						}
+
+						if(currentPos>LAST_SPOT_TOP_ROW)
+						{
+							onTopRow=FALSE;
+							onBottomRow=TRUE;
+						}
+						else
+						{
+							onTopRow=TRUE;
+							onBottomRow=FALSE;
+						}
+
+
+						buttonPushed=FALSE; //reset button pushed
+
+						//reset direction
+						direction=noDirectionYet;
+						//check if player won
+						didIwin=didPlayerWin(currentPos);
+				}
 			}
-			}
-			if (flag)
+			if (flag)  //this flag was set it the timer interrupt occurred, ie the timer overflowed
 			        {
-			            flag = 0;
+			           flag = 0;
 			           count++;
+
 			           if(count>6)
 			           {
 			        	   //display gameOver  and reinitialize game
@@ -171,59 +178,49 @@ void main(void)
 
 			        }
 			if(didIwin)
-							{
-								LCDCLR();
-								startingPoint=initPlayer();
-								onTopRow=TRUE;
-								onBottomRow=FALSE;
-								NotOnFarRight=TRUE;
-								NotOnFarLeft=FALSE;
+					{
+						LCDCLR();
+						startingPoint=initPlayer();
+						onTopRow=TRUE;
+						onBottomRow=FALSE;
+						NotOnFarRight=TRUE;
+						NotOnFarLeft=FALSE;
 
-									//start out going in no particular direction
-								buttonPushed=FALSE;
-								direction=noDirectionYet;
+						buttonPushed=FALSE;
 
-								currentPos=startingPoint;
+						//reset direction
+						direction=noDirectionYet;
+						//reset player position to starting point
+						currentPos=startingPoint;
 
-								char string1[]="You       ";
-								char string2[]="Won!      ";
-								cursorToLineOne();
-								writeString(string1);
-								cursorToLineTwo();
-								writeString(string2);
-								count=0;
+						displayYouWon();
 
+						count=0;
+					}
 
+		} //ends while(1) loop
+}	//ends main code
 
-							}
-
-	}
-
-
-}
-
+//this code creates mines which are not
 void generateAndSetMines()
 {
 	unsigned char upper=0;
 	unsigned char lower=0;
 
+	//this makes sure the mines are not stacked nor adjacent to each other (diagonal)
 	while(upper==lower || upper == (lower+1) || upper == (lower-1))
 	{
 		randomNum=prand(randomNum);
-		firstMine= 0x81+randomNum%7;
+		firstMine= FIRST_ROW_SECOND_SPACE+randomNum%7;
 		randomNum=prand(randomNum);
-		secondMine=0xC0+randomNum%7;
+		secondMine=SECOND_ROW_FIRST_SPACE+randomNum%7;
 
-		upper=(firstMine & 0x0f);
-		lower=(secondMine & 0x0f);
+		upper=(firstMine & CLEAR_LOWER_BIT);
+		lower=(secondMine & CLEAR_LOWER_BIT);
 	}
 
 	setMines(firstMine,secondMine);
 }
-
-//
-// YOUR TIMER A ISR GOES HERE
-//
 
 void init_timer()
 {
@@ -232,9 +229,9 @@ void init_timer()
 
 	    TACTL |= TACLR;             // clear TAR
 
-	    TACTL |= TASSEL1;           // configure for SMCLK - what's the frequency (roughly)?
+	    TACTL |= TASSEL1;           // configure for SMCLK
 
-	    TACTL |= ID1|ID0;           // divide clock by 8 - what's the frequency of interrupt?
+	    TACTL |= ID1|ID0;           // divide timer clock by 8
 
 	    TACTL &= ~TAIFG;            // clear interrupt flag
 
@@ -253,7 +250,10 @@ void init_buttons()
 	 P1OUT |= BIT1|BIT2|BIT3|BIT4;                   // configure as pull-up
 	 P1IFG &= ~(BIT1|BIT2|BIT3|BIT4);                // clear flags
 }
+
 // Flag for continuous counting is TAIFG
+//every 0xffff clock cycles, the timer overflows and the interrupt occurs
+//the timer ticks one count every clock cycle
 #pragma vector=TIMER0_A1_VECTOR
 __interrupt void TIMER0_A1_ISR(void)
 {
@@ -263,78 +263,80 @@ __interrupt void TIMER0_A1_ISR(void)
 
 
 //interrrupts for buttons
+//P1IES this is what triggers the interrupt, if it is 1, the interrupt will trigger on
+//a falling edge. If it is 0, the interrupt will trigger on a rising edge. P1 Edge Select.
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1_ISR(void)
 {
-    if (P1IFG & BIT1)
+    if (P1IFG & BIT1)  //checks to see if bit1 of the interrupt flag is set (if bit1 is what triggered the interrupt)
     {
-        P1IFG &= ~BIT1;                            // clear flag
+        P1IFG &= ~BIT1;                            // clear bit1 interrupt flag
 
-        if (BIT1 & P1IES)
+        if (BIT1 & P1IES)		//if bit one is registered as a falling edge, react to button pushed
             {
         	        buttonPushed=TRUE;
         	        direction=goRight;
             }
-        else
+        else					//if bit one is registered as a rising edge, debounce
             {
                      LCDDELAY2();//debounce
             }
 
-        P1IES ^= BIT1;
-        P1IFG &= ~BIT1;
+        P1IES ^= BIT1; //flip the edge we want to trigger the interrupt on
+
     }
 
-    if (P1IFG & BIT2)
+    if (P1IFG & BIT2) //checks to see if bit2 of the interrupt flag is set (if bit2 is what triggered the interrupt)
     {
-        P1IFG &= ~BIT2;                         // clear flag
+        P1IFG &= ~BIT2;                         // clear bit2 interrupt flag
 
-        if (BIT2 & P1IES)
+        if (BIT2 & P1IES)		//if bit two is registered as a falling edge, react to button pushed
             {
         			buttonPushed=TRUE;
         	        direction=goLeft;
             }
-        else
+        else					//if bit two is registered as a rising edge, debounce
             {
                     LCDDELAY2();//debounce
             }
 
-        P1IES ^= BIT2;
-        P1IFG &= ~BIT2;
+        P1IES ^= BIT2; //flip the edge we want to trigger the interrupt on
+
     }
 
-    if (P1IFG & BIT3)
+    if (P1IFG & BIT3) //checks to see if bit3 of the interrupt flag is set (if bit3 is what triggered the interrupt)
     {
-        P1IFG &= ~BIT3;                         // clear P1.3 interrupt flag
+        P1IFG &= ~BIT3;                         // clear bit3 interrupt flag
 
-        if (BIT3 & P1IES)
+        if (BIT3 & P1IES)	//if bit three is registered as a falling edge, react to button pushed
             {
         			buttonPushed=TRUE;
         	        direction=goUp;
             }
-        else
+        else					//if bit three is registered as a rising edge, debounce
             {
                      LCDDELAY2();//debounce
             }
 
-        P1IES ^= BIT3;
-        P1IFG &= ~BIT3;
+        P1IES ^= BIT3; //flip the edge we want to trigger the interrupt on
+
     }
 
-    if (P1IFG & BIT4)
+    if (P1IFG & BIT4) //checks to see if bit4 of the interrupt flag is set (if bit4 is what triggered the interrupt)
        {
-           P1IFG &= ~BIT4;                         // clear P1.3 interrupt flag
+           P1IFG &= ~BIT4;                         // clear bit4 interrupt flag
 
-           if (BIT4 & P1IES)
+           if (BIT4 & P1IES)	//if bit four is registered as a falling edge, react to button pushed
                {
         	        buttonPushed=TRUE;
         	        direction=goDown;
                }
-           else
+           else					//if bit four is registered as a rising edge, debounce
                {
                     LCDDELAY2();//debounce
                }
 
-         P1IES ^= BIT4;
-         P1IFG &= ~BIT4;
+         P1IES ^= BIT4;	//flip the edge we want to trigger the interrupt on
+
        }
 }

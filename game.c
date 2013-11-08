@@ -84,6 +84,15 @@ char didPlayerWin(unsigned char player)
 	return player == 0xC7;
 }
 
+void displayYouWon()
+{
+	char string1[]="You       ";
+	char string2[]="Won!      ";
+	cursorToLineOne();
+	writeString(string1);
+	cursorToLineTwo();
+	writeString(string2);
+}
 unsigned char gameOver()
 {
 	unsigned char player=0x80;
