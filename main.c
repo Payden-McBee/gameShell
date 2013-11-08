@@ -1,8 +1,6 @@
 #include <msp430.h>
 #include "game.h"
-//#include "button.h"
 #include "LCD.h"
-//#include "rand.h"
 #include "msp430-rng/rand.h"
 
 #define TRUE 0x1
@@ -85,14 +83,11 @@ void main(void)
 	//start out going in no particular direction
 	buttonPushed=FALSE;
 	direction=noDirectionYet;
-	/////////////every time you detect a release (rising edge) delay for a short period of time, this should debounce it
 	currentPos=startingPoint;
 	printPlayer(startingPoint);
 
-
 	generateAndSetMines();
 
-	//randomNum=prand(randomNum); //use in main program loop
 	while(1)
 	{
 			if(currentPos==firstMine||currentPos==secondMine)
